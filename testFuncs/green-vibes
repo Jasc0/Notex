@@ -1,0 +1,130 @@
+#!/bin/bash
+name="greenVibes"
+style="
+.$name{
+	background-color: #050505;
+	color: #f9e0a1;
+
+}
+.$name body {
+	color: #f9e0a1;
+	background-color: #151515;
+	position: static;
+	display: block;
+	min-height: 100%;
+	font-family: Hack;
+	font-size: 20px;
+	margin: 0 auto;
+	padding-left: 20px;
+	padding-right: 20px;
+	justify-content: center;
+	max-width: 1100px;
+	text-rendering: optimizeLegibility;
+}
+
+.$name p, .$name ul, .$name ol {
+  max-width: 80ch;     /* readable line length */
+  hyphens: auto;       /* gentler wrapping for long words/URLs */
+  overflow-wrap: anywhere;
+}
+.$name center {
+  display: block;
+  text-align: center;
+  margin-left: 0px;
+  margin-right: 80px;
+  max-width: 80ch;   /* match paragraph readable width */
+}
+
+.$name h1 {
+	font-family: Cantarell;
+	font-weight: bold;
+	font-size: 75pt;
+	color: #0f7c07;
+	background-color: #050505;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-bottom: 0px;
+	margin-bottom: 0px;
+	max-width: 1100px;
+	width: 95vw;
+}
+.$name h2 {
+	color: #0f7c07;
+	font-size: 30pt;
+	font-weight: bold;
+	padding-left: 20px;
+	padding-right: 20px;
+	max-width: 1100px;
+}
+.$name h3 {
+	color: #e59202;
+	font-size: 25pt;
+	padding-left: 25px;
+	padding-right: 25px;
+	max-width: 1100px;
+}
+.$name h4 {
+	font-size: 25pt;
+	padding-left: 25px;
+	padding-right: 25px;
+	max-width: 1100px;
+}
+.$name img {
+	margin: 20px;
+	max-width: 900px;
+}
+.$name ul {
+  list-style-type: disc; /* main list: solid bullet */
+}
+.$name ul ul {
+  list-style-type: disc; /* main list: solid bullet */
+}
+.$name ul ul ul {
+  list-style-type: disc; /* main list: solid bullet */
+}
+.$name ol {
+	margin-bottom:30px;
+}
+
+.$name li::marker {
+	color: #e59202;
+}
+.$name li{
+	line-height:30px;
+	margin-bottom:20px;
+}
+
+.$name p {
+	line-height:36px;
+	margin-top: 10px;
+  	margin-bottom: 30px;
+  	margin-right: 80px;
+  	margin-left: 30px;
+	max-width: 1100px;
+}
+
+.$name a:link {
+	color: #00ba00;
+	text-decoration: none;
+}
+.$name a:visited {
+	color: #0f7c07;
+	text-decoration: none;
+}
+.$name a:hover {
+	color: #00ba00;
+	text-decoration: underline;
+}
+"
+if [[ "$1" == "--supplies" ]]; then
+	echo "!$name"
+else
+	if [[ $1 == "!$name" ]]; then
+		if [[ ${@: -1} == "--style" ]] ; then
+		echo "$style"
+		else
+			echo "$name"
+		fi
+	fi
+fi
+

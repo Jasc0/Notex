@@ -1,0 +1,13 @@
+
+{
+	# Styling
+	Styling should be handled by attributes, if you want to apply styling with functions it must be inline styling. Styles are determined at compile time by passing --style as the last argument to the attribute script. It should return the css for the given parameters which will be placed in a style tag in the head. The "data-" prefix will automatically be applied 
+}
+
+{
+	#Group as argument behavior
+	{
+		#internal
+		When using a group as an argument to a list or (other thing not yet implemented) do not add anything to the compilation queue on the primitive token iteration (i.e. do not add it on the first list item token), this should be handled in the group iteration. This is done to preserve attributes
+	}
+}

@@ -1,0 +1,19 @@
+#!/bin/bash
+if [[ "$1" == "--supplies" ]]; then
+	echo "!dark0 !light0"
+else
+	if [[ $1 == "!dark" ]]; then
+		if [[ ${@: -1} == "--style" ]] ; then
+		echo ".dark0 {background-color: black; color: white;}"
+		else
+			echo "dark0"
+		fi
+	elif [[ $1 == "!light" ]]; then
+		if [[ ${@: -1} == "--style" ]] ; then
+		echo ".light0 {background-color: white; color: black;}"
+		else
+			echo "light0"
+		fi
+	fi
+fi
+

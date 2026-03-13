@@ -1,0 +1,11 @@
+#!/bin/bash
+if [[ "$1" == "--supplies" ]]; then
+  echo "now"
+elif [[ "$1" == "now" ]]; then
+	if [[ -z "$2" ]]; then
+  date
+else
+  date +"$1"
+	fi
+fi
+
