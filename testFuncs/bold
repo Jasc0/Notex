@@ -1,9 +1,0 @@
-#!/bin/bash
-if [[ "$1" == "--supplies" ]]; then
-	echo "bold"
-else
-	if [[ $1 == "bold" ]] ; then
-		echo "<b>${!#}</b>"
-	fi
-fi
-
