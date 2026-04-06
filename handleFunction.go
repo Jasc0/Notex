@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 	"unicode"
@@ -27,6 +28,8 @@ const (
 	FuncBeginFunction // @ after / 
 	FuncParseName
 	FuncParseParams
+	FuncParseQuotedParam
+	FuncParseQuotedParamEscape
 	FuncParseObject
 )
 
@@ -51,7 +54,6 @@ func scanFunction( inp_str string) ([]NotexFunction, error){
 
 	for ;cur_index < len(inp);{
 		c := inp[cur_index]
-		//fmt.Printf("i:%d c:%c s:%v\n", cur_index, c, state)
 		switch(state){
 		case FuncNormalState:
 			switch(c){
@@ -94,6 +96,8 @@ func scanFunction( inp_str string) ([]NotexFunction, error){
 			}
 		case FuncParseParams:
 			switch(c){
+			case '"':
+        state = FuncParseQuotedParam
 			case ',':
 				cur_func.parameters = append(cur_func.parameters, strBuilder.String())
 				//fmt.Printf("adding param: %s", strBuilder.String())
@@ -106,6 +110,20 @@ func scanFunction( inp_str string) ([]NotexFunction, error){
 			default:
 				strBuilder.WriteRune(c)
 			}
+
+		case FuncParseQuotedParam:
+			switch(c){
+			case '"':
+				state = FuncParseParams  // closing quote, back to normal
+			case '\\':
+				state = FuncParseQuotedParamEscape
+			default:
+				strBuilder.WriteRune(c)
+			}
+		case FuncParseQuotedParamEscape:
+			strBuilder.WriteRune(c)
+			state = FuncParseQuotedParam
+
 		case FuncParseObject:
 			switch (c){
 			case '{':
@@ -158,6 +176,9 @@ func applyFunction(funcs map[string]string, inp_str string) string {
 
 	f := fns[0]
 	sf, err := scanFunction(f.object)
+	if err != nil{
+		log.Fatal(err)
+	}
 	for ; len(sf) > 0; sf, err = scanFunction(f.object){
 		if err != nil{
 			log.Fatal(err)
@@ -171,10 +192,15 @@ func applyFunction(funcs map[string]string, inp_str string) string {
 	cmd := exec.Command(funcs[f.name], params...)
 
 	out, err := cmd.Output()
-	if err != nil{ log.Fatal(err) }
-	strBuilder.WriteString(inp_str[:f.start])
+	if err != nil{ 
+		fmt.Fprintf(os.Stderr, "%s:%s is undefined or unrunnable\n",
+		f.name, funcs[f.name])
+		log.Fatal(err) 
+	}
+	runes := []rune(inp_str)
+	strBuilder.WriteString(string(runes[:f.start]))
 	strBuilder.WriteString(strings.TrimRight(string(out), "\n"))
-	strBuilder.WriteString(inp_str[f.end:])
+	strBuilder.WriteString(string(runes[f.end:]))
 	
 	newInpStr := strBuilder.String()
 	strBuilder.Reset()

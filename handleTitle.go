@@ -12,13 +12,14 @@ type NotexHeading struct{
 }
 
 func (h NotexHeading) String() (string, error){
+	text := renderText(h.text)
 	switch(h.strength){
 	case 0,1,2,3:
-		return fmt.Sprintf("<h%d>%s</h%d>",h.strength+1, h.text, h.strength+1), nil
+		return fmt.Sprintf("<h%d>%s</h%d>",h.strength+1, text, h.strength+1), nil
 	case 4:
-		return fmt.Sprintf("<u><b>%s</b></u>", h.text ), nil
+		return fmt.Sprintf("<u><b>%s</b></u>", text ), nil
 	default:
-		return fmt.Sprintf("<b>%s</b>", h.text ), nil
+		return fmt.Sprintf("<b>%s</b>", text ), nil
 	}
 	
 

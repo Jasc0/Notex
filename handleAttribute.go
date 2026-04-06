@@ -108,13 +108,13 @@ func scanAttributes(inp_str string) ([]NotexUncompiledAttribute, error){
 			}
 		case AttrPotential:
 			if c == '@'{
+				cur_attr = new(NotexUncompiledAttribute)
 				state = AttrReadName
 			}else{
 				state =AttrBegin
 			}
 
 		case AttrReadName:
-			cur_attr = new(NotexUncompiledAttribute)
 			if validAttrName(c){
 				strBuilder.WriteRune(c)
 			} else{

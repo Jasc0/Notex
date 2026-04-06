@@ -33,7 +33,10 @@ func (nh NotexHead) String() (string, error){
 
 
 func separateHeader(inp string) (body, head string){
-	parts := strings.Split(inp, "]")
+	if !strings.HasPrefix(strings.TrimLeft(inp, " \t\n"), "["){
+		return inp, ""
+	}
+	parts := strings.SplitN(inp, "]", 2)
 	if len(parts) < 2{
 		return inp, ""
 	}
@@ -52,7 +55,8 @@ func handleHead(inp string) NotexHead{
 		if len(line) == 0{
 			continue
 		}
-		switch rune(line[0]){
+		line_runes := []rune(line)
+		switch line_runes[0]{
 		case '#':
 			head.title = line[1:]
 			// title

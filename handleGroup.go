@@ -65,7 +65,14 @@ func handleGroups(inp_str string) (NotexGroup, error) {
 	inp := []rune(inp_str)
 	for _, c := range inp{
 		if literal{
-			strBuilder.WriteRune(c)
+			switch c {
+			case '<':
+				strBuilder.WriteString("&lt;")
+			case '>':
+				strBuilder.WriteString("&gt;")
+			default:
+				strBuilder.WriteRune(c)
+			}
 			literal = false
 			continue
 		}
@@ -112,7 +119,7 @@ func handleGroups(inp_str string) (NotexGroup, error) {
 		}
 
 	}
-		cur_group.sequence = append(cur_group.sequence, NotexString(strBuilder.String()))
+		flushString()
 		if cur_group.depth > 0{
 			return root, fmt.Errorf("reached EOF without closing group")
 		}

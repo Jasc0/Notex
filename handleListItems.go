@@ -26,7 +26,7 @@ type NotexListItem struct {
 
 func (li NotexListItem) String() (string, error){
 	if li.Behavior == inlineListItem{
-		return fmt.Sprintf("<li>%s</li>", li.inline), nil
+		return fmt.Sprintf("<li>%s</li>", renderText(li.inline)), nil
 	}
 	// allow NotexGroup iteration to add to the compilation queue
 	return "DO NOT USE", nil

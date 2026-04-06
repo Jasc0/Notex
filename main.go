@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"html"
+//	"html"
 	"io"
 	"log"
 	"os"
@@ -11,8 +11,9 @@ import (
 	"strings"
 )
 
-func read_input() string {
+func read_input() (string, *string) {
 	var input_str string 
+	var output *string = nil
 	switch(len(os.Args)){
 	case 1:
 		b, err := io.ReadAll(os.Stdin)
@@ -27,8 +28,11 @@ func read_input() string {
 			log.Fatal(err)
 		}
 		input_str = string(b)
+		if len(os.Args) == 3{
+			output = &os.Args[2]
+		}
 	}
-	return input_str
+	return input_str, output
 }
 
 
@@ -37,7 +41,7 @@ func getSupplies(path string) []string{
 	cmd := exec.Command(path, "--supplies")
 	cmd.Stdout = &stdout
 	if err := cmd.Run(); err != nil {
-				log.Fatal(err)
+				log.Fatal("Failure reading path:",path, err)
 	}
 	return strings.Fields(stdout.String())
 }
@@ -53,8 +57,8 @@ func (o OutputDocument) String() string{
 	if err != nil{
 		log.Fatal(err)
 	}
-	strBuilder.WriteString("<!doctype html>")
-	strBuilder.WriteString("<html lang=\"en-US\">")
+	strBuilder.WriteString("<!doctype html>\n")
+	strBuilder.WriteString("<html lang=\"en-US\">\n")
 	strBuilder.WriteString(hs)
 	strBuilder.WriteString(o.body)
 	strBuilder.WriteString("</html>")
@@ -63,11 +67,10 @@ func (o OutputDocument) String() string{
 
 
 func main() {
-	input := read_input()
+	input, output := read_input()
 	func_defs, attr_defs := init_functions()
 	no_coms := removeComments(input)
-	escaped := html.EscapeString(no_coms)
-	func_applied := applyFunction(func_defs, escaped)
+	func_applied := applyFunction(func_defs, no_coms)
 	body_str, head_str := separateHeader(func_applied)
 	head := handleHead(head_str)
 	root, err := handleGroups(body_str)
@@ -79,7 +82,20 @@ func main() {
 	head.styles= style_map
 	body := parse(root)
 	doc := OutputDocument{head: head, body: body}
-	fmt.Println(doc.String())
+	if output == nil{
+		fmt.Println(doc.String())
+	} else{
+		f, err := os.Create(*output)
+		if err != nil{
+			log.Fatal(err)
+		}
+		defer f.Close()
+		_, err = fmt.Fprint(f, doc.String())
+		if err != nil{
+			log.Fatal(err)
+		}
+
+	}
 
 }
 
@@ -87,7 +103,7 @@ func main() {
 func init_functions()	(funcs_p map[string]string, attrs_p map[string]string){
 	funcs := make(map[string]string)
 	attrs := make(map[string]string)
-	path := os.Getenv("NOTEX_TEST_PATH")
+	path := os.Getenv("NOTEX_PATH")
 
 	for dir := range strings.SplitSeq(path,":"){
 		files, err := os.ReadDir(dir)
@@ -108,6 +124,8 @@ func init_functions()	(funcs_p map[string]string, attrs_p map[string]string){
 			}
 		}
 	}
+	//fmt.Fprintf(os.Stderr, "Found functions: %v\n", funcs)
+	//fmt.Fprintf(os.Stderr, "Found attributes: %v\n", attrs)
 	return funcs, attrs
 }
 

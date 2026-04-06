@@ -149,14 +149,14 @@ func _parse(group NotexGroup, queue *[]Stringable){
 				*queue = append(*queue, handleTitle(str, group.depth))
 			case '-', '.':
 				li := handleItem(str)
-				if li.Behavior == groupListItem{
-					groupAsArgument = NotexListItem{}
-					continue
-				}
 				if li.Type == orderedList{
 					state.updateLists(true, false)
 				} else{
 					state.updateLists(false, true)
+				}
+				if li.Behavior == groupListItem{
+					groupAsArgument = NotexListItem{}
+					continue
 				}
 				*queue = append(*queue, li)
 			case '<':
@@ -179,30 +179,35 @@ func _parse(group NotexGroup, queue *[]Stringable){
 	state.updateLists(false, false)
 }
 
-
-
-func removeComments(inp_str string) string{
-	var strBuilder strings.Builder
-	write := true
-	ignore := false
-	inp := []rune(inp_str)
-	for _, c := range inp{
-		switch(c){
-		case '%':
-			if !ignore{
-				write = false
-				ignore = false
-			}
-		case '\\':
-			ignore = true
-		case '\n':
-			write = true
-		}
-		if write{
-			strBuilder.WriteRune(c)
-		}
-	}	
-	return strBuilder.String()
+func removeComments(inp_str string) string {
+    var strBuilder strings.Builder
+    write := true
+    ignore := false
+    inQuote := false
+    inp := []rune(inp_str)
+    for _, c := range inp {
+        switch c {
+        case '"':
+            inQuote = !inQuote
+        case '%':
+            if !ignore && !inQuote {
+                write = false
+            }
+        case '\\':
+            ignore = true
+        case '\n':
+            write = true
+            inQuote = false
+        }
+        if write {
+            strBuilder.WriteRune(c)
+        }
+        if c != '\\' {
+            ignore = false
+        }
+    }
+    return strBuilder.String()
 }
+
 
 
